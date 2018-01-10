@@ -167,13 +167,14 @@ def process_yeelight(text):
     if ("turn" or "toggle") in text:
         if "on" in text:
             target_bulb.turn_on()
-            answer = 'Bulb is now on'
+            answer = ('%s is now on' % target_name)
         elif "off" in text:
             target_bulb.turn_off()
-            answer = 'Bulb is now on'
+            answer = ('%s is now off' % target_name)answer = 'Bulb is now off'
+
         elif "toggle" in text:
             target_bulb.toggle()
-            answer = 'Light is toggled'
+            answer = ('I\'ve toggled %s power' % target_name)
 
     # Condición para gestionar el brillo
     if ("brightness" or "bright") in text.split():
@@ -183,7 +184,7 @@ def process_yeelight(text):
             value = int(re.search('\d+[^%]', text).group(0))
             
         target_bulb.set_brightness(value)
-        answer = 'Brightness value set'
+        answer = ('%s brightness value set' % target_name)
 
     # Condición para gestionar el color de la bombilla
     if ("color" or "rgb") and not ("temp" or "temperature") in text:       
@@ -194,7 +195,7 @@ def process_yeelight(text):
                         target_bulb.set_rgb(colors[key][0],colors[key][1],colors[key][2])
                         answer = 'Color set'
         else:
-            answer = 'This bulb isn\'t RGB capable'
+            answer = ('%s isn\'t RGB capable', % target_name)
 
     # Condición para gestionar la temperatura de color
     if ("temp" or "temperature") in text:
@@ -206,7 +207,7 @@ def process_yeelight(text):
             else:
                 answer = 'Color temperature must be between 1700 and 6500 degrees'
         else:
-            answer = 'This bulb doesn\'t support color temperature adjustment'
+            answer = ('%s doesn\'t support color temperature adjustment' % target_name)
     
     # Una vez evaluadas las condiciones, damos una respuesta
     aiy.audio.say(answer)
