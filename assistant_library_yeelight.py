@@ -16,13 +16,13 @@ from google.assistant.library.event import EventType
 
 from yeelight import discover_bulbs, Bulb
 
-## Start logging
+## Configuramos el log de eventos
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
 )
 
-## Class for assistant running in background so we can use the button
+## Clase para ejecutar Assistant en segundo plano y así poder capturar las pulsaciones del botón
 class MyAssistant(object):
     def __init__(self):
         self._task = threading.Thread(target=self._run_task)
@@ -30,7 +30,7 @@ class MyAssistant(object):
         self._assistant = None
 
     def start(self):
-        # Starts the assistant event loop and begin processing events.
+        # Inicia el loop de eventos de Assistant y comienza a procesarlos
         self._task.start()
 
     def _run_task(self):
@@ -46,7 +46,7 @@ class MyAssistant(object):
         if event.type == EventType.ON_START_FINISHED:
             status_ui.status('ready')
             self._can_start_conversation = True
-            # Start the voicehat button trigger.
+            # Inicia la detección de botón de voicehat
             aiy.voicehat.get_button().on_press(self._on_button_pressed)
             if sys.stdout.isatty():
                 print('Say "OK, Google" or press the button, then speak. '
@@ -72,14 +72,14 @@ class MyAssistant(object):
             sys.exit(1)
 
     def _on_button_pressed(self):
-        # Check if we can start a conversation. 'self._can_start_conversation'
-        # is False when either:
-        # 1. The assistant library is not yet ready; OR
-        # 2. The assistant library is already in a conversation.
+        # Comprobamos si se puede iniciar una conversación 'self._can_start_conversation'
+        # si es FALSO:
+        # 1. La librería de assistant no está lista todavía; OR
+        # 2. La librería de assistant ya está en una conversación
         if self._can_start_conversation:
             self._assistant.start_conversation()
 
-## Events Handler
+## Gestión de eventos
 def handle_event(text, my):
     if text == 'power off':
         my._assistant.stop_conversation()
@@ -90,14 +90,16 @@ def handle_event(text, my):
     elif text == 'ip address':
         my._assistant.stop_conversation()
         say_ip()
+    # Si alguna palabra coincide con el nombre de una bombilla
     elif any(word in text for word in [bulb['capabilities']['name'].lower() for bulb in my_bulbs]):
         my._assistant.stop_conversation()
+        # Procesamos el texto para ver qué hacer con dicha bombilla
         process_yeelight(text)
     
     
-## Yeelight Actions
+## Inicializa las bombillas yeelight
 def init_yeelight():
-    # On run, we'll check for bulbs
+    # Al ejecutarse descubre las bombillas
     bulb_list = discover_bulbs() 
     bulb_len = len(bulb_list)
 
@@ -111,25 +113,28 @@ def init_yeelight():
         refresh = 0
         
         for bulb in bulb_list:
-            # Bulbs must have a name 
+            # Comprobamos que todas tienen nombre, si no lo tienen...
             if not bulb['capabilities']['name']:
                 target_bulb = Bulb(bulb['ip'])                
                 print('------------------------------')
                 print('Bulb IP is: %s' % bulb['ip'])
                 print('This Yeelight %s has no name' % bulb['capabilities']['model'])
                 
+                #Asignamos un nombre a la bombilla
                 bulb_name = input('Enter name of the bulb: ')            
                 target_bulb.set_name(bulb_name)
                 refresh = 1
-
+        
+        #Actualizamos la lista de bombillas
         if refresh:
             print('Updating bulbs lists')
             bulb_list = discover_bulbs()
 
     return bulb_list
 
+## Procesado de las acciones a realizar con la bombilla
 def process_yeelight(text):
-     ## Define colors
+    # Definimos los nombres de los colores
     colors = {
         'red':[255,0,0],
         'orange':[255,159,0],
@@ -145,10 +150,11 @@ def process_yeelight(text):
         'fuchsia':[255,0,159],
         'white':[255,255,255]
     }
-
+    
+    # Definimos la respuesta del asistente
     answer = "I don't know what to do"
     
-    # Set target bulb    
+    # Buscamos la bombilla objetivo   
     for word in text.split():
         for bulb in my_bulbs:
             capabilities = bulb.get('capabilities')            
@@ -157,7 +163,7 @@ def process_yeelight(text):
                 target_name = capabilities['name']
                 target_support = capabilities['support']
 
-    # Handle turn on and off
+    # Condición para encender o apagar la bombilla
     if ("turn" or "toggle") in text:
         if "on" in text:
             target_bulb.turn_on()
@@ -169,7 +175,7 @@ def process_yeelight(text):
             target_bulb.toggle()
             answer = 'Light is toggled'
 
-    # Handle brightness
+    # Condición para gestionar el brillo
     if ("brightness" or "bright") in text.split():
         if "full" in text:
             value = 100
@@ -179,15 +185,7 @@ def process_yeelight(text):
         target_bulb.set_brightness(value)
         answer = 'Brightness value set'
 
-    # Set HUE and saturation
-    if ("hue" or "saturation") in text:
-        if "set_hsv" in target_support:
-            values = re.findall(r'\d+',text)
-            print(values)
-        else:
-            answer = 'This bulb doesn\'t support HSV adjustment'
-
-    #Set bulb color
+    # Condición para gestionar el color de la bombilla
     if ("color" or "rgb") and not ("temp" or "temperature") in text:       
         if "set_rgb" in target_support:
             for word in text.split():
@@ -198,7 +196,7 @@ def process_yeelight(text):
         else:
             answer = 'This bulb isn\'t RGB capable'
 
-    #Set color temp
+    # Condición para gestionar la temperatura de color
     if ("temp" or "temperature") in text:
         if "set_ct_abx" in target_support:
             value = int(re.search('\d+', text).group(0))
@@ -209,10 +207,11 @@ def process_yeelight(text):
                 answer = 'Color temperature must be between 1700 and 6500 degrees'
         else:
             answer = 'This bulb doesn\'t support color temperature adjustment'
-
+    
+    # Una vez evaluadas las condiciones, damos una respuesta
     aiy.audio.say(answer)
 
-## Local Actions
+## Acciones locales
 def power_off_pi():
     aiy.audio.say('Good bye!')
     subprocess.call('sudo shutdown now', shell=True)
@@ -225,14 +224,14 @@ def say_ip():
     ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
     aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'))
 
-## Main code
+## Función principal
 def main():  
-    #Initialize assistant
+    #Inicializamos el asistente
     MyAssistant().start()
  
 if __name__ == '__main__':
-    ## Look for yeelight bulbs
+    # Buscamos bombillas y las inicializamos
     my_bulbs = init_yeelight()
 
-    ## Launch assistant
+    # Lanzamos el asistente
     main()
