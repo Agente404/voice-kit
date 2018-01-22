@@ -72,7 +72,7 @@ class YeelightBulb(object):
     def set_color_temp(self, temp):
         if "set_ct_abx" in self.support:
             if 1700 <= temp <= 6500:
-                self.bulb.set_color_temp(value)
+                self.bulb.set_color_temp(temp)
                 answer = ('%s color temperature set' % self.name)
             else:
                 answer = 'Color temperature must be between 1700 and 6500 degrees'
@@ -181,15 +181,15 @@ def init_yeelight():
 
             #Comprobamos que la bombilla tiene nombre
             if bulb['capabilities']['name']:
-                name = bulb['capabilities']['name']
+                name = bulb['capabilities']['name'].lower()
             else:
                 print('------------------------------')
-                print('Bulb IP is: %s' % bulb['ip'])
-                print('This Yeelight %s has no name' % bulb['capabilities']['model'])
+                print('Bulb IP is: %s' % ip)
+                print('This Yeelight %s has no name' % model)
 
                 #Si no lo tine asignamos un nombre a la bombilla
-                target_bulb = Bulb(bulb['ip'])
-                name = input('Enter name of the bulb: ')
+                target_bulb = Bulb(ip)
+                name = input('Enter name of the bulb: ').lower()
                 target_bulb.set_name(name)
 
             #Añadimos la bombilla al diciconario
