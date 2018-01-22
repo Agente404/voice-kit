@@ -9,4 +9,7 @@ Script para controlar bombillas Yeelight haciendo uso de python-yeelight. A día
 * Color
 * Temperatura de color
 
+Dependencias:
+* [python-yeelight](https://gitlab.com/stavros/python-yeelight)
+
 Testeado con Yeelight RGBW bulb y Yeelight Mono bulb. Puedes leer más acerca de este script en [El Blog del Agente 404](https://agente404.com/2018/01/10/controlando-luces-yeelight-con-voice-kit/)
