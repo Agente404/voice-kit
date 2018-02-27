@@ -99,7 +99,15 @@ def process_ifttt(text):
     parameters = {}
 
     # Send requests
-    answer = requests.post(url, data=parameters)
+    r = requests.post(url, data=payload)
+
+    if r.headers['Content-Type'] == 'text/html':
+        answer = r.text
+    elif r.headers['Content-Type'] == 'application/json':
+        json = r.json()
+        answer = json[0]['message']
+    else:
+        answer = 'I couldn\'t send the request'
 
     aiy.audio.say(answer)
 
