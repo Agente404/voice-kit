@@ -99,7 +99,9 @@ def process_ifttt(text):
     parameters = {}
 
     # Send requests
-    requests.post(url, data=parameters)
+    answer = requests.post(url, data=parameters)
+
+    aiy.audio.say(answer)
 
 # Gestión de eventos
 def handle_event(my, text):
