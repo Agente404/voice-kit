@@ -87,20 +87,21 @@ class MyAssistant(object):
 def process_ifttt(text):
     api_key = 'bB165GMzAnKaqPXN64byEt'
 
-    # Find trigger in text
+    # Buscamos el disparador en el texto
     for word in text.split():
         if word in trigger:
             event_name = word
 
-    # Generate url for request
+    # Generamos la URL de la request
     url = ('https://maker.ifttt.com/trigger/%s/with/key/%s' % event_name, api_key)
 
-    # Get request parameters
+    # Obtenemos los parámetros para la request
     payload = {}
 
-    # Send requests
+    # Enviamos la request
     r = requests.post(url, data=payload)
 
+    # Procesamos la respuesta
     if r.headers['Content-Type'] == 'text/html':
         answer = r.text
     elif r.headers['Content-Type'] == 'application/json':
