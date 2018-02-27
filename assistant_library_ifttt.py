@@ -93,7 +93,7 @@ def process_ifttt(text):
             event_name = word
 
     # Generamos la URL de la request
-    url = ('https://maker.ifttt.com/trigger/%s/with/key/%s' % event_name, api_key)
+    url = ('https://maker.ifttt.com/trigger/%s/with/key/%s' % (event_name, api_key))
 
     # Obtenemos los parámetros para la request
     payload = []
@@ -102,9 +102,9 @@ def process_ifttt(text):
     r = requests.post(url, data=payload)
 
     # Procesamos la respuesta
-    if r.headers['Content-Type'] == 'text/html':
+    if 'text/html' in r.headers['Content-Type']:
         answer = r.text
-    elif r.headers['Content-Type'] == 'application/json':
+    elif 'application/json' in r.headers['Content-Type']:
         json = r.json()
         answer = json[0]['message']
     else:
@@ -149,7 +149,7 @@ def main():
 
 if __name__ == '__main__':
     # Definimos disparadores de acciones
-    trigger = ["hola","mundo"];
+    trigger = ["hello","done"];
 
     # Lanzamos el asistente
     main()
