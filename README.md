@@ -13,3 +13,11 @@ Dependencias:
 * [python-yeelight](https://gitlab.com/stavros/python-yeelight)
 
 Testeado con Yeelight RGBW bulb y Yeelight Mono bulb. Puedes leer más acerca de este script en [El Blog del Agente 404](https://agente404.com/2018/01/10/controlando-luces-yeelight-con-voice-kit/)
+
+## assistant_library_ifttt.py
+Este script permite lanzar un evento Webhooks en IFTTT:
+
+Dependencias:
+* [requests](http://docs.python-requests.org/en/master/)
+
+Este script es un "Work in progress" no ha sido testeado todavía.
