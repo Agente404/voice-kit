@@ -96,7 +96,7 @@ def process_ifttt(text):
     url = ('https://maker.ifttt.com/trigger/%s/with/key/%s' % event_name, api_key)
 
     # Obtenemos los parámetros para la request
-    payload = {}
+    payload = []
 
     # Enviamos la request
     r = requests.post(url, data=payload)
