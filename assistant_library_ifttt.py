@@ -81,7 +81,7 @@ class MyAssistant(object):
         if self._can_start_conversation:
             self._assistant.start_conversation()
 
-# #Definición de funciones
+## Definición de funciones
 
 # Procesado del texto para request a IFTTT
 def process_ifttt(text):
