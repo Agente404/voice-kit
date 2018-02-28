@@ -85,7 +85,7 @@ class MyAssistant(object):
 
 # Procesado del texto para request a IFTTT
 def process_ifttt(text):
-    api_key = 'bB165GMzAnKaqPXN64byEt'
+    api_key = 'your_api_key'
 
     # Buscamos el disparador en el texto
     for word in text.split():
